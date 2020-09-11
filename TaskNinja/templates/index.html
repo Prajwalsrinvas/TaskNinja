@@ -36,7 +36,7 @@
         <input type="submit" value="Add Task" class="btn-primary">
     </form>
     <br>
-    {% if tasks|length > 1 %}
+    {% if tasks|length > 0 %}
         <center><button  class="btn-success" onclick="location.href = '/export'">Click to export to-do list in csv format!</button></center>
     {% endif %}
 </div>
