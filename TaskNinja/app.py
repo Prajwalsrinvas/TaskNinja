@@ -49,27 +49,24 @@ def delete(id):
 @app.route('/update/<int:id>', methods=['POST', 'GET'])
 def update(id):
     task = Todo.query.get_or_404(id)
-    if request.method == 'POST':
-        task.content = request.form['content']
-        try:
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue updating that task'
-
-    else:
+    if request.method != 'POST':
         return render_template('update.html', task=task)
+    task.content = request.form['content']
+    try:
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was an issue updating that task'
 
 
 @app.route("/export")
 def export():
-    outfile = open('todo.csv', 'a')
-    outcsv = csv.writer(outfile)
-    records = db.session.query(Todo).all()
-    outcsv.writerow([column.name for column in Todo.__mapper__.columns])
-    [outcsv.writerow([getattr(curr, column.name)
-                      for column in Todo.__mapper__.columns]) for curr in records]
-    outfile.close()
+    with open('todo.csv', 'a') as outfile:
+        outcsv = csv.writer(outfile)
+        records = db.session.query(Todo).all()
+        outcsv.writerow([column.name for column in Todo.__mapper__.columns])
+        [outcsv.writerow([getattr(curr, column.name)
+                          for column in Todo.__mapper__.columns]) for curr in records]
     return send_file('todo.csv', as_attachment=True)
 
 
